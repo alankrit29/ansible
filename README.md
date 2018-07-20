@@ -28,4 +28,4 @@ Now, in order to configure client machines ready from deployment, share ssh-copy
 
 > If all checks are passed, run the ansible lamp playbook as: ansible-playbook -v lamp.yml
 
-After Ansible deployment, login client servers and check if everything is as it was was planned.
+After Ansible deployment, login client servers and check if everything is as good as it was planned.
