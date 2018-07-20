@@ -1,0 +1,82 @@
+---
+- hosts: staging
+  sudo: yes
+
+  tasks:
+
+    - name: update
+      apt: update_cache=yes
+
+    - name: install apache2
+      apt: name=apache2 state=present
+
+    - name: add repo
+      apt_repository: repo='ppa:ondrej/php' update_cache=yes
+
+    - name: install php{{V}}
+      apt: name={{item}} state=present
+      with_items: 
+       - "php{{V}}"  
+       - "php{{V}}-fpm"
+       - "php{{V}}-mysql"
+       - "libapache2-mod-php{{V}}"
+       - "php{{V}}-curl"
+       - "php{{V}}-intl"
+       - "php{{V}}-gd"
+       - "php{{V}}-dom"
+       - "php{{V}}-mcrypt"
+       - "php{{V}}-iconv"
+       - "php{{V}}-xsl"
+       - "php{{V}}-mbstring"
+       - "php{{V}}-ctype"
+       - "php{{V}}-zip"
+       - "php{{V}}-pdo"
+       - "php{{V}}-xml"
+       - "php{{V}}-bz2"
+       - "php{{V}}-calendar"
+       - "php{{V}}-exif"
+       - "php{{V}}-fileinfo"
+       - "php{{V}}-json"
+       - "php{{V}}-mysqli"
+       - "php{{V}}-mysql"
+       - "php{{V}}-posix"
+       - "php{{V}}-tokenizer"
+       - "php{{V}}-xmlwriter"
+       - "php{{V}}-xmlreader"
+       - "php{{V}}-phar"
+
+    - name: enable module
+      command: a2enmod rewrite
+
+    - name: Restart apache2
+      service: name=apache2 state=restarted
+
+    - name: Pre-steps to make mysql-server gets installed without prompting for password
+      shell: export DEBIAN_FRONTEND="noninteractive"
+
+    - name: Entering Password
+      shell: echo "mysql-server-{{v}} mysql-server/root_password password {{mysql_root_password}}" | debconf-set-selections
+
+    - name: Entering Password again
+      shell: echo "mysql-server-{{v}} mysql-server/root_password_again password {{mysql_root_password}}" | debconf-set-selections
+
+    - name: Install MySQL
+
+      apt: name={{item}} state=present
+      sudo: yes
+      with_items:
+        - "mysql-server"
+
+    - name: Start the MySQL service
+      service: name=mysql state=restarted enabled=yes
+
+    - shell: /usr/bin/mysql -u root -p{{mysql_root_password}} -e "{{item}}"
+      with_items:
+        - UPDATE mysql.user SET Grant_priv='Y', Super_priv='Y' WHERE User='root';
+        - GRANT ALL ON *.* TO 'root'@'localhost';
+        - create database {{database_name}};
+        - grant all on {{database_name}}.* to '{{database_user}}'@'localhost' identified by '{{mysql_root_password}}';
+        - flush privileges;
+
+
+...
