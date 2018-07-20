@@ -75,7 +75,7 @@
         - UPDATE mysql.user SET Grant_priv='Y', Super_priv='Y' WHERE User='root';
         - GRANT ALL ON *.* TO 'root'@'localhost';
         - create database {{database_name}};
-        - grant all on {{database_name}}.* to '{{database_user}}'@'localhost' identified by '{{mysql_root_password}}';
+        - grant all on {{database_name}}.* to 'root'@'localhost' identified by '{{mysql_root_password}}';
         - flush privileges;
 
 
