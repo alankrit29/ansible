@@ -1,6 +1,6 @@
 [staging]
-host1 ansible_ssh_host=192.168.5.109
-host2 ansible_ssh_host=192.168.5.108 
+host1 ansible_ssh_host=192.168.X.X
+host2 ansible_ssh_host=192.168.X.Y 
 
 [staging:vars]
 mysql_root_password=myrootpassword
